@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <title>天水圍香島中學 - 數學動態小劇場：認老豆大挑戰</title>
+    <style>
+        :root {
+            --primary: #4a90e2;
+            --danger: #e74c3c;
+            --success: #2ecc71;
+            --bg: #eef2f7;
+        }
+        body {
+            font-family: 'PingFang HK', 'Microsoft JhengHei', sans-serif;
+            background: var(--bg);
+            margin: 0;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            user-select: none;
+        }
+        .header { text-align: center; margin-bottom: 10px; }
+        .header h1 { margin: 0; color: #2c3e50; font-size: 26px; }
+        .header p { margin: 5px 0; color: #7f8c8d; font-size: 15px; }
+
+        /* 模式切換 Tabs */
+        .tab-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .tab-btn {
+            padding: 10px 24px;
+            font-size: 17px;
+            font-weight: bold;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .tab-btn.active-eq { background: var(--danger); color: white; transform: scale(1.05); }
+        .tab-btn.active-id { background: var(--success); color: white; transform: scale(1.05); }
+        .tab-btn.inactive { background: #fff; color: #555; }
+
+        /* 舞台主卡片 */
+        .stage-box {
+            background: white;
+            width: 720px;
+            max-width: 95vw;
+            border-radius: 24px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+            padding: 25px;
+            box-sizing: border-box;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 控制滑桿區 */
+        .slider-section {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            border: 2px dashed #cbd5e1;
+            text-align: center;
+        }
+        .slider-title { font-size: 18px; font-weight: bold; color: #334155; margin-bottom: 10px; }
+        .slider-ctrl {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        input[type=range] {
+            width: 60%;
+            height: 12px;
+            border-radius: 6px;
+            outline: none;
+            cursor: pointer;
+        }
+        .val-badge {
+            font-size: 24px;
+            font-weight: bold;
+            padding: 4px 16px;
+            border-radius: 12px;
+            min-width: 40px;
+            display: inline-block;
+        }
+
+        /* 動態人物劇場大舞台 */
+        .theater {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            height: 230px;
+            position: relative;
+            border-bottom: 4px solid #94a3b8;
+            margin-bottom: 20px;
+        }
+
+        /* 動畫角色造型 */
+        .actor {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .bubble {
+            background: white;
+            border: 3px solid #333;
+            border-radius: 16px;
+            padding: 8px 14px;
+            font-size: 15px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            position: relative;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            max-width: 200px;
+            text-align: center;
+            min-height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 10px 10px 0;
+            border-style: solid;
+            border-color: #333 transparent;
+            display: block;
+            width: 0;
+        }
+
+        .avatar-box {
+            font-size: 85px;
+            line-height: 1;
+            filter: drop-shadow(0 6px 8px rgba(0,0,0,0.15));
+            transition: transform 0.2s;
+        }
+
+        /* 動作動畫 */
+        .shake { animation: shakeAnim 0.4s infinite; }
+        .jump { animation: jumpAnim 0.6s infinite alternate; }
+        .celebrate { animation: cheerAnim 0.5s infinite alternate; }
+
+        @keyframes shakeAnim {
+            0%, 100% { transform: translateX(0) rotate(0deg); }
+            25% { transform: translateX(-6px) rotate(-4deg); }
+            75% { transform: translateX(6px) rotate(4deg); }
+        }
+        @keyframes jumpAnim {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-20px) scale(1.05); }
+        }
+        @keyframes cheerAnim {
+            0% { transform: rotate(-8deg) scale(1.1); }
+            100% { transform: rotate(8deg) scale(1.2); }
+        }
+
+        /* 數學算式即時運算面板 */
+        .math-board {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #1e293b;
+            color: white;
+            padding: 16px 24px;
+            border-radius: 16px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .math-result {
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .res-wrong { background: #ef4444; color: white; animation: shakeAnim 0.5s; }
+        .res-correct { background: #22c55e; color: white; animation: pulse 1s infinite alternate; }
+
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 rgba(34, 197, 94, 0.4); }
+            100% { transform: scale(1.06); box-shadow: 0 0 20px rgba(34, 197, 94, 0.8); }
+        }
+
+        /* 彩帶粒子效果 */
+        .confetti {
+            position: absolute;
+            font-size: 26px;
+            animation: fall 1.2s forwards ease-out;
+            pointer-events: none;
+        }
+        @keyframes fall {
+            0% { opacity: 1; transform: translate(0, 0) rotate(0deg); }
+            100% { opacity: 0; transform: translate(var(--tx), -160px) rotate(360deg); }
+        }
+
+        /* 天平機 (恆等式專用視覺) */
+        .balance-beam {
+            width: 240px;
+            height: 10px;
+            background: #f59e0b;
+            border-radius: 5px;
+            position: relative;
+            margin: 20px auto 0;
+            transition: transform 0.2s;
+        }
+        .balance-fulcrum {
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-bottom: 25px solid #64748b;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>👨‍🏫 數學小劇場：認老豆大挑戰</h1>
+        <p>「有鬍鬚唔一定係老豆」vs「老豆一定係男人」！</p>
+    </div>
+
+    <!-- 模式選擇 -->
+    <div class="tab-group">
+        <button class="tab-btn active-eq" id="tabEq" onclick="switchMode('eq')">
+            🔍 情境 1：方程 (Equation)
+        </button>
+        <button class="tab-btn inactive" id="tabId" onclick="switchMode('id')">
+            ⚖️ 情境 2：恆等式 (Identity)
+        </button>
+    </div>
+
+    <!-- 主舞台 -->
+    <div class="stage-box" id="stageBox">
+        
+        <!-- 滑桿區 -->
+        <div class="slider-section">
+            <div class="slider-title" id="sliderPrompt">
+                🎯 嘗試代入數值 x，睇下邊個先係真老豆：
+            </div>
+            <div class="slider-ctrl">
+                <span style="font-weight: bold; font-size: 20px;">x = </span>
+                <input type="range" id="xSlider" min="0" max="6" value="1" step="1" oninput="renderState()">
+                <span class="val-badge" id="xDisplay" style="background: #e2e8f0;">1</span>
+            </div>
+        </div>
+
+        <!-- 卡通人物舞台 -->
+        <div class="theater" id="theaterBox">
+            <!-- 學生角色 (左) -->
+            <div class="actor">
+                <div class="bubble" id="boyBubble">阿伯你邊位呀？！</div>
+                <div class="avatar-box shake" id="boyAvatar">👦</div>
+                <div style="font-weight:bold; color:#475569; margin-top:5px;">你 (學生)</div>
+            </div>
+
+            <!-- 對象角色 (右) -->
+            <div class="actor">
+                <div class="bubble" id="targetBubble">Ho! Ho! 聖誕快樂！</div>
+                <div class="avatar-box" id="targetAvatar">🎅</div>
+                <div style="font-weight:bold; color:#475569; margin-top:5px;" id="targetLabel">街邊有鬍鬚嘅人</div>
+            </div>
+        </div>
+
+        <!-- 恆等式天平展示 (切換時顯示) -->
+        <div id="balanceContainer" style="display: none; text-align: center; margin-bottom: 20px;">
+            <div class="balance-beam" id="balanceBeam">
+                <div style="position:absolute; left: -20px; top: -30px; font-size: 24px;">⚖️ 左方</div>
+                <div style="position:absolute; right: -20px; top: -30px; font-size: 24px;">右方 ⚖️</div>
+            </div>
+            <div class="balance-fulcrum"></div>
+            <p style="color: #16a34a; font-weight: bold; margin-top: 10px;">✨ 宇宙真理天平：左右兩邊永遠平衡！ ✨</p>
+        </div>
+
+        <!-- 數學算式面板 -->
+        <div class="math-board">
+            <div id="mathEquation">
+                算式：2x - 1 = 9
+            </div>
+            <div class="math-result res-wrong" id="resultBadge">
+                ❌ 不成立 (唔係老豆)
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Web Audio API：產生搞笑卡通音效（無需任何外連音效檔）
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        let audioCtx = null;
+
+        function playSound(type) {
+            try {
+                if (!audioCtx) audioCtx = new AudioCtx();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                if (type === 'wrong') {
+                    // 搞笑彈簧/錯誤音 (低頻往下滑)
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(220, audioCtx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(80, audioCtx.currentTime + 0.3);
+                    gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                    gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.3);
+                } else if (type === 'correct') {
+                    // 通關和弦鈴聲
+                    [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
+                        const o = audioCtx.createOscillator();
+                        const g = audioCtx.createGain();
+                        o.connect(g);
+                        g.connect(audioCtx.destination);
+                        o.frequency.setValueAtTime(freq, audioCtx.currentTime + i * 0.08);
+                        g.gain.setValueAtTime(0.2, audioCtx.currentTime + i * 0.08);
+                        g.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + i * 0.08 + 0.4);
+                        o.start(audioCtx.currentTime + i * 0.08);
+                        o.stop(audioCtx.currentTime + i * 0.08 + 0.4);
+                    });
+                }
+            } catch(e) { console.log('Audio disabled'); }
+        }
+
+        // 角色設定資料庫 (方程模式)
+        const characters = {
+            0: { avatar: '🧔‍♂️', name: '鬍鬚文青', boySay: '你戴副眼鏡都唔係我老豆！', targetSay: '我只係路過飲咖啡...', mathL: -1 },
+            1: { avatar: '🎅', name: '聖誕老人', boySay: '阿伯，你派禮物咋，唔係我老豆！', targetSay: 'Ho! Ho! 聖誕快樂！', mathL: 1 },
+            2: { avatar: '🧙‍♂️', name: '長鬚甘道夫', boySay: '救命！你識魔法都唔係我老豆！', targetSay: 'You shall not pass!', mathL: 3 },
+            3: { avatar: '🏴‍☠️', name: '鬍鬚海盜', boySay: '打劫呀！快啲走呀！', targetSay: '將啲金幣交出嚟！', mathL: 5 },
+            4: { avatar: '🥷', name: '神秘忍者', boySay: '你連樣都見唔到！唔好亂認親！', targetSay: '忍法·消失之術！', mathL: 7 },
+            5: { avatar: '👨‍💼', name: '親生老豆', boySay: '🎉 老豆！你終於放工返嚟喇！', targetSay: '乖仔！今晚食大餐！', mathL: 9 },
+            6: { avatar: '🦁', name: '鬃毛雄獅', boySay: '呢隻直情係動物園隻獅子呀！', targetSay: 'Roaaarrr~ (吼)', mathL: 11 }
+        };
+
+        let currentMode = 'eq';
+
+        function switchMode(mode) {
+            currentMode = mode;
+            const tabEq = document.getElementById('tabEq');
+            const tabId = document.getElementById('tabId');
+            const slider = document.getElementById('xSlider');
+            const balance = document.getElementById('balanceContainer');
+
+            if (mode === 'eq') {
+                tabEq.className = 'tab-btn active-eq';
+                tabId.className = 'tab-btn inactive';
+                slider.min = 0; slider.max = 6; slider.value = 1;
+                document.getElementById('sliderPrompt').innerText = '🎯 嘗試拖拉 x，睇下幾時先搵到親生老豆：';
+                balance.style.display = 'none';
+            } else {
+                tabEq.className = 'tab-btn inactive';
+                tabId.className = 'tab-btn active-id';
+                slider.min = -10; slider.max = 10; slider.value = 3;
+                document.getElementById('sliderPrompt').innerText = '⚖️ 恆等式：無論 x 點變，老豆都必定係男人！';
+                balance.style.display = 'block';
+            }
+            renderState();
+        }
+
+        function spawnConfetti() {
+            const stage = document.getElementById('stageBox');
+            for(let i = 0; i < 20; i++) {
+                const conf = document.createElement('div');
+                conf.className = 'confetti';
+                conf.innerText = ['🎉','❤️','✨','⭐','💯'][Math.floor(Math.random()*5)];
+                conf.style.left = (Math.random() * 80 + 10) + '%';
+                conf.style.top = '60%';
+                conf.style.setProperty('--tx', (Math.random() * 200 - 100) + 'px');
+                stage.appendChild(conf);
+                setTimeout(() => conf.remove(), 1200);
+            }
+        }
+
+        function renderState() {
+            const xVal = parseInt(document.getElementById('xSlider').value);
+            document.getElementById('xDisplay').innerText = xVal;
+
+            const boyAvatar = document.getElementById('boyAvatar');
+            const boyBubble = document.getElementById('boyBubble');
+            const targetAvatar = document.getElementById('targetAvatar');
+            const targetBubble = document.getElementById('targetBubble');
+            const targetLabel = document.getElementById('targetLabel');
+            const mathEquation = document.getElementById('mathEquation');
+            const resultBadge = document.getElementById('resultBadge');
+
+            if (currentMode === 'eq') {
+                // 方程模式
+                const c = characters[xVal] || characters[0];
+                targetAvatar.innerText = c.avatar;
+                targetLabel.innerText = c.name;
+                targetBubble.innerText = c.targetSay;
+                boyBubble.innerText = c.boySay;
+
+                const lhs = c.mathL;
+                mathEquation.innerHTML = `左方: 2(${xVal}) - 1 = <b style="color:#38bdf8;">${lhs}</b> ｜ 右方: <b>9</b>`;
+
+                if (xVal === 5) {
+                    // 唯一解
+                    boyAvatar.className = 'avatar-box celebrate';
+                    boyAvatar.innerText = '🤩';
+                    targetAvatar.className = 'avatar-box jump';
+                    resultBadge.className = 'math-result res-correct';
+                    resultBadge.innerHTML = '✔ 左右相等！唯一專屬解 (x = 5)';
+                    playSound('correct');
+                    spawnConfetti();
+                } else {
+                    // 錯解
+                    boyAvatar.className = 'avatar-box shake';
+                    boyAvatar.innerText = '😱';
+                    targetAvatar.className = 'avatar-box';
+                    resultBadge.className = 'math-result res-wrong';
+                    resultBadge.innerHTML = `❌ ${lhs} ≠ 9 (只係路人叔叔)`;
+                    playSound('wrong');
+                }
+            } else {
+                // 恆等式模式
+                boyAvatar.className = 'avatar-box jump';
+                boyAvatar.innerText = '😎';
+                boyBubble.innerText = '唔使拗啦！呢句說話無懈可擊！';
+
+                targetAvatar.className = 'avatar-box celebrate';
+                targetAvatar.innerText = '👨‍🍼';
+                targetLabel.innerText = '天下所有父親';
+                targetBubble.innerText = '「凡是爸爸，都必定是男人！」';
+
+                const lhs = 2 * (xVal - 1);
+                const rhs = 2 * xVal - 2;
+
+                mathEquation.innerHTML = `左: 2(${xVal} - 1) = <b style="color:#4ade80;">${lhs}</b> ≡ 右: 2(${xVal}) - 2 = <b style="color:#4ade80;">${rhs}</b>`;
+                resultBadge.className = 'math-result res-correct';
+                resultBadge.innerHTML = '⭐ 永遠成立！恆等於 (≡)';
+                playSound('correct');
+            }
+        }
+
+        // 初始化第一次渲染
+        renderState();
+    </script>
+</body>
+</html>
