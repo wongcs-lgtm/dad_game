@@ -24,7 +24,6 @@
         .header h1 { margin: 0; color: #2c3e50; font-size: 26px; }
         .header p { margin: 5px 0; color: #7f8c8d; font-size: 15px; }
 
-        /* 模式切換 Tabs */
         .tab-group {
             display: flex;
             gap: 15px;
@@ -44,7 +43,6 @@
         .tab-btn.active-id { background: var(--success); color: white; transform: scale(1.05); }
         .tab-btn.inactive { background: #fff; color: #555; }
 
-        /* 舞台主卡片 */
         .stage-box {
             background: white;
             width: 720px;
@@ -57,7 +55,6 @@
             overflow: hidden;
         }
 
-        /* 控制滑桿區 */
         .slider-section {
             background: #f8fafc;
             border-radius: 16px;
@@ -89,7 +86,6 @@
             display: inline-block;
         }
 
-        /* 動態人物劇場大舞台 */
         .theater {
             display: flex;
             justify-content: space-around;
@@ -100,7 +96,6 @@
             margin-bottom: 20px;
         }
 
-        /* 動畫角色造型 */
         .actor {
             display: flex;
             flex-direction: column;
@@ -144,7 +139,6 @@
             transition: transform 0.2s;
         }
 
-        /* 動作動畫 */
         .shake { animation: shakeAnim 0.4s infinite; }
         .jump { animation: jumpAnim 0.6s infinite alternate; }
         .celebrate { animation: cheerAnim 0.5s infinite alternate; }
@@ -163,7 +157,6 @@
             100% { transform: rotate(8deg) scale(1.2); }
         }
 
-        /* 數學算式即時運算面板 */
         .math-board {
             display: flex;
             justify-content: space-between;
@@ -191,7 +184,6 @@
             100% { transform: scale(1.06); box-shadow: 0 0 20px rgba(34, 197, 94, 0.8); }
         }
 
-        /* 彩帶粒子效果 */
         .confetti {
             position: absolute;
             font-size: 26px;
@@ -203,7 +195,6 @@
             100% { opacity: 0; transform: translate(var(--tx), -160px) rotate(360deg); }
         }
 
-        /* 天平機 (恆等式專用視覺) */
         .balance-beam {
             width: 240px;
             height: 10px;
@@ -227,10 +218,9 @@
 
     <div class="header">
         <h1>👨‍🏫 數學小劇場：認老豆大挑戰</h1>
-        <p>「有鬍鬚唔一定係老豆」vs「老豆一定係男人」！</p>
+        <p>「有鬍鬚唔一定係老豆」vs「你的爸爸就是你的父親」！</p>
     </div>
 
-    <!-- 模式選擇 -->
     <div class="tab-group">
         <button class="tab-btn active-eq" id="tabEq" onclick="switchMode('eq')">
             🔍 情境 1：方程 (Equation)
@@ -240,10 +230,7 @@
         </button>
     </div>
 
-    <!-- 主舞台 -->
     <div class="stage-box" id="stageBox">
-        
-        <!-- 滑桿區 -->
         <div class="slider-section">
             <div class="slider-title" id="sliderPrompt">
                 🎯 嘗試代入數值 x，睇下邊個先係真老豆：
@@ -255,16 +242,13 @@
             </div>
         </div>
 
-        <!-- 卡通人物舞台 -->
         <div class="theater" id="theaterBox">
-            <!-- 學生角色 (左) -->
             <div class="actor">
                 <div class="bubble" id="boyBubble">阿伯你邊位呀？！</div>
                 <div class="avatar-box shake" id="boyAvatar">👦</div>
                 <div style="font-weight:bold; color:#475569; margin-top:5px;">你 (學生)</div>
             </div>
 
-            <!-- 對象角色 (右) -->
             <div class="actor">
                 <div class="bubble" id="targetBubble">Ho! Ho! 聖誕快樂！</div>
                 <div class="avatar-box" id="targetAvatar">🎅</div>
@@ -272,17 +256,15 @@
             </div>
         </div>
 
-        <!-- 恆等式天平展示 (切換時顯示) -->
         <div id="balanceContainer" style="display: none; text-align: center; margin-bottom: 20px;">
             <div class="balance-beam" id="balanceBeam">
                 <div style="position:absolute; left: -20px; top: -30px; font-size: 24px;">⚖️ 左方</div>
                 <div style="position:absolute; right: -20px; top: -30px; font-size: 24px;">右方 ⚖️</div>
             </div>
             <div class="balance-fulcrum"></div>
-            <p style="color: #16a34a; font-weight: bold; margin-top: 10px;">✨ 宇宙真理天平：左右兩邊永遠平衡！ ✨</p>
+            <p style="color: #16a34a; font-weight: bold; margin-top: 10px;">✨ 宇宙真理天平：左右本質完全相同，永遠平衡！ ✨</p>
         </div>
 
-        <!-- 數學算式面板 -->
         <div class="math-board">
             <div id="mathEquation">
                 算式：2x - 1 = 9
@@ -291,11 +273,9 @@
                 ❌ 不成立 (唔係老豆)
             </div>
         </div>
-
     </div>
 
     <script>
-        // Web Audio API：產生搞笑卡通音效（無需任何外連音效檔）
         const AudioCtx = window.AudioContext || window.webkitAudioContext;
         let audioCtx = null;
 
@@ -310,7 +290,6 @@
                 gain.connect(audioCtx.destination);
 
                 if (type === 'wrong') {
-                    // 搞笑彈簧/錯誤音 (低頻往下滑)
                     osc.type = 'sawtooth';
                     osc.frequency.setValueAtTime(220, audioCtx.currentTime);
                     osc.frequency.exponentialRampToValueAtTime(80, audioCtx.currentTime + 0.3);
@@ -319,7 +298,6 @@
                     osc.start();
                     osc.stop(audioCtx.currentTime + 0.3);
                 } else if (type === 'correct') {
-                    // 通關和弦鈴聲
                     [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
                         const o = audioCtx.createOscillator();
                         const g = audioCtx.createGain();
@@ -335,7 +313,6 @@
             } catch(e) { console.log('Audio disabled'); }
         }
 
-        // 角色設定資料庫 (方程模式)
         const characters = {
             0: { avatar: '🧔‍♂️', name: '鬍鬚文青', boySay: '你戴副眼鏡都唔係我老豆！', targetSay: '我只係路過飲咖啡...', mathL: -1 },
             1: { avatar: '🎅', name: '聖誕老人', boySay: '阿伯，你派禮物咋，唔係我老豆！', targetSay: 'Ho! Ho! 聖誕快樂！', mathL: 1 },
@@ -365,7 +342,7 @@
                 tabEq.className = 'tab-btn inactive';
                 tabId.className = 'tab-btn active-id';
                 slider.min = -10; slider.max = 10; slider.value = 3;
-                document.getElementById('sliderPrompt').innerText = '⚖️ 恆等式：無論 x 點變，老豆都必定係男人！';
+                document.getElementById('sliderPrompt').innerText = '⚖️ 恆等式：無論點講，爸爸本質上就係父親！';
                 balance.style.display = 'block';
             }
             renderState();
@@ -398,7 +375,6 @@
             const resultBadge = document.getElementById('resultBadge');
 
             if (currentMode === 'eq') {
-                // 方程模式
                 const c = characters[xVal] || characters[0];
                 targetAvatar.innerText = c.avatar;
                 targetLabel.innerText = c.name;
@@ -409,7 +385,6 @@
                 mathEquation.innerHTML = `左方: 2(${xVal}) - 1 = <b style="color:#38bdf8;">${lhs}</b> ｜ 右方: <b>9</b>`;
 
                 if (xVal === 5) {
-                    // 唯一解
                     boyAvatar.className = 'avatar-box celebrate';
                     boyAvatar.innerText = '🤩';
                     targetAvatar.className = 'avatar-box jump';
@@ -418,7 +393,6 @@
                     playSound('correct');
                     spawnConfetti();
                 } else {
-                    // 錯解
                     boyAvatar.className = 'avatar-box shake';
                     boyAvatar.innerText = '😱';
                     targetAvatar.className = 'avatar-box';
@@ -427,15 +401,14 @@
                     playSound('wrong');
                 }
             } else {
-                // 恆等式模式
                 boyAvatar.className = 'avatar-box jump';
                 boyAvatar.innerText = '😎';
-                boyBubble.innerText = '唔使拗啦！呢句說話無懈可擊！';
+                boyBubble.innerText = '左邊定右邊，根本就係同一回事！';
 
                 targetAvatar.className = 'avatar-box celebrate';
                 targetAvatar.innerText = '👨‍🍼';
-                targetLabel.innerText = '天下所有父親';
-                targetBubble.innerText = '「凡是爸爸，都必定是男人！」';
+                targetLabel.innerText = '爸爸 ≡ 父親';
+                targetBubble.innerText = '「你的爸爸，就是你的父親！」';
 
                 const lhs = 2 * (xVal - 1);
                 const rhs = 2 * xVal - 2;
@@ -447,7 +420,6 @@
             }
         }
 
-        // 初始化第一次渲染
         renderState();
     </script>
 </body>
